@@ -36,4 +36,30 @@ app.post('/criar-pagamento', async (req, res) => {
   }
 });
 
+app.get('/conferir-pagamento/:payment_id', async (req, res) => {
+  try {
+    const random_id = Math.random()
+
+    const { payment_id } = req.params
+
+    const response = await axios.get(
+      `https://api.mercadopago.com/v1/payments/${payment_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (erro) {
+    res.status(erro.response?.status || 500).json({
+      erro: true,
+      msg: erro.response?.data || erro.message,
+    });
+  }
+});
+
+
 app.listen(3000, () => console.log('API rodando na porta 3000'));
